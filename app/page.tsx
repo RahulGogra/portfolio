@@ -19,7 +19,8 @@ import {
 } from "lucide-react";
 
 // Import the CustomCursor component
-import CustomCursor from "../components/CustomCursor"; // Adjust path as needed
+import CustomCursor from "../components/CustomCursor";
+import ThemeSwitcher from "../components/ThemeSwitcher";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -48,6 +49,7 @@ export default function Portfolio() {
         setPositions(newPositions);
         }
     }, []);
+
     // Scroll spy for active section
     useEffect(() => {
         const handleScroll = () => {
@@ -84,10 +86,10 @@ export default function Portfolio() {
         {
             title: "NeuralDoodle - AI Image Classification Tool",
             description:
-                "Built a browser-based image classifier supporting real-time webcam input with over 90% accuracy. Trained and deployed a KNN classifier using MobileNet embeddings for 5+ dynamic user-defined classes. Designed an intuitive interface adopted by 100+ testers for live model training and prediction visualization. [cite_start]Achieved 60% lower latency by executing training entirely client-side without server requests.",
+                "Built a browser-based image classifier supporting real-time webcam input with over 90% accuracy. Trained and deployed a KNN classifier using MobileNet embeddings for 5+ dynamic user-defined classes. Designed an intuitive interface adopted by 100+ testers for live model training and prediction visualization.",
             tech: ["Next.js", "TypeScript", "TailwindCSS", "TensorFlow.js"],
-            image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=600&h=400&fit=crop", // Placeholder image
-            github: "https://github.com/RahulGogra/NeuralDoodle", // Assuming a GitHub link based on name
+            image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=600&h=400&fit=crop",
+            github: "https://github.com/RahulGogra/NeuralDoodle",
             live: "https://neuraldoodle.vercel.app",
         },
         {
@@ -95,8 +97,8 @@ export default function Portfolio() {
             description:
                 "Developed an interactive web app to animate 10+ algorithms, enhancing conceptual clarity for students. Illustrated complex logic of 5+ sorting and pathfinding algorithms (e.g., Merge Sort, A*) through real-time visuals. Optimized UI/UX design, resulting in a 35% increase in user interaction during testing sessions.",
             tech: ["React", "D3.js", "JavaScript", "CSS Animations"],
-            image: "https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=600&h=400&fit=crop", // Placeholder image
-            github: "https://github.com/RahulGogra/Algorithm_Visualizer", // Assuming a GitHub link based on name
+            image: "https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=600&h=400&fit=crop",
+            github: "https://github.com/RahulGogra/Algorithm_Visualizer",
             live: "https://algorithm-visualizer-umber.vercel.app",
         },
         {
@@ -153,12 +155,12 @@ export default function Portfolio() {
     ];
 
     return (
-        <div className="min-h-screen bg-gray-900 text-white overflow-x-hidden">
+        <div className="min-h-screen bg-primary text-primary overflow-x-hidden transition-theme">
             <CustomCursor />
 
             {/* Navigation */}
             <motion.nav
-                className="fixed top-0 left-0 right-0 z-40 bg-gray-900/80 backdrop-blur-lg border-b border-gray-800"
+                className="fixed top-0 left-0 right-0 z-40 bg-primary/80 backdrop-blur-lg border-b border-theme"
                 initial={{ y: -100 }}
                 animate={{ y: 0 }}
                 transition={{ duration: 0.6 }}
@@ -166,14 +168,14 @@ export default function Portfolio() {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between h-16">
                         <motion.div
-                            className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent"
+                            className="text-2xl font-bold gradient-text"
                             whileHover={{ scale: 1.05 }}
                         >
                             Rahul Gogra
                         </motion.div>
 
                         {/* Desktop Navigation */}
-                        <div className="hidden md:flex space-x-8">
+                        <div className="hidden md:flex items-center space-x-8">
                             {[
                                 "home",
                                 "about",
@@ -184,10 +186,10 @@ export default function Portfolio() {
                                 <motion.button
                                     key={item}
                                     onClick={() => scrollToSection(item)}
-                                    className={`capitalize transition-colors hover:text-blue-400 ${
+                                    className={`capitalize transition-theme ${
                                         activeSection === item
-                                            ? "text-blue-400"
-                                            : "text-gray-300"
+                                            ? "text-primary"
+                                            : "text-secondary hover:text-primary"
                                     }`}
                                     whileHover={{ scale: 1.1 }}
                                     whileTap={{ scale: 0.95 }}
@@ -195,20 +197,24 @@ export default function Portfolio() {
                                     {item}
                                 </motion.button>
                             ))}
+                            <ThemeSwitcher />
                         </div>
 
                         {/* Mobile Menu Button */}
-                        <motion.button
-                            className="md:hidden"
-                            onClick={() => setIsMenuOpen(!isMenuOpen)}
-                            whileTap={{ scale: 0.95 }}
-                        >
-                            {isMenuOpen ? (
-                                <X className="w-6 h-6" />
-                            ) : (
-                                <Menu className="w-6 h-6" />
-                            )}
-                        </motion.button>
+                        <div className="md:hidden flex items-center gap-4">
+                            <ThemeSwitcher />
+                            <motion.button
+                                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                                whileTap={{ scale: 0.95 }}
+                                className="text-secondary hover:text-primary transition-theme"
+                            >
+                                {isMenuOpen ? (
+                                    <X className="w-6 h-6" />
+                                ) : (
+                                    <Menu className="w-6 h-6" />
+                                )}
+                            </motion.button>
+                        </div>
                     </div>
                 </div>
 
@@ -216,7 +222,7 @@ export default function Portfolio() {
                 <AnimatePresence>
                     {isMenuOpen && (
                         <motion.div
-                            className="md:hidden bg-gray-800 border-t border-gray-700"
+                            className="md:hidden bg-secondary border-t border-theme"
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: "auto" }}
                             exit={{ opacity: 0, height: 0 }}
@@ -233,7 +239,7 @@ export default function Portfolio() {
                                     <motion.button
                                         key={item}
                                         onClick={() => scrollToSection(item)}
-                                        className="block w-full text-left capitalize text-gray-300 hover:text-blue-400 transition-colors"
+                                        className="block w-full text-left capitalize text-secondary hover:text-primary transition-theme"
                                         whileHover={{ x: 10 }}
                                     >
                                         {item}
@@ -255,7 +261,8 @@ export default function Portfolio() {
                     {positions.map((pos, i) => (
                     <motion.div
                         key={i}
-                        className="absolute w-2 h-2 bg-blue-500 rounded-full"
+                        className="absolute w-2 h-2 rounded-full"
+                        style={{ backgroundColor: 'var(--accent-primary)' }}
                         initial={{ x: pos.initialX, y: pos.initialY }}
                         animate={{ x: pos.targetX, y: pos.targetY }}
                         transition={{
@@ -274,13 +281,13 @@ export default function Portfolio() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8, delay: 0.2 }}
                     >
-                        <span className="bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+                        <span className="gradient-text">
                             Rahul Gogra
                         </span>
                     </motion.h1>
 
                     <motion.p
-                        className="text-xl md:text-2xl text-gray-300 mb-8"
+                        className="text-xl md:text-2xl text-secondary mb-8"
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8, delay: 0.4 }}
@@ -288,7 +295,7 @@ export default function Portfolio() {
                         Full Stack Web Developer | AI Enthusiast | Cybersecurity
                         Advocate
                     </motion.p>
-                    
+
                     <motion.div
                       className="flex flex-col sm:flex-row gap-4 justify-center items-center"
                       initial={{ opacity: 0, y: 30 }}
@@ -297,7 +304,7 @@ export default function Portfolio() {
                     >
                       <motion.button
                         onClick={() => scrollToSection('projects')}
-                        className="px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full font-semibold hover:shadow-lg hover:shadow-blue-500/25 transition-all duration-300 flex items-center gap-2"
+                        className="px-8 py-3 gradient-primary rounded-full font-semibold shadow-theme transition-theme flex items-center gap-2"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                       >
@@ -306,18 +313,17 @@ export default function Portfolio() {
 
                       <motion.button
                         onClick={() => scrollToSection('contact')}
-                        className="px-8 py-3 border-2 border-gray-600 rounded-full font-semibold hover:border-blue-400 hover:text-blue-400 transition-all duration-300"
+                        className="px-8 py-3 border-2 border-theme rounded-full font-semibold hover:bg-tertiary transition-theme"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                       >
                         Get In Touch
                       </motion.button>
 
-                      {/* New Download Resume Button */}
                       <motion.a
-                        href="/Rahul Gogra's CV.pdf" // Path relative to the public directory
-                        download // This attribute makes the browser download the file
-                        className="px-8 py-3 bg-gradient-to-r from-green-500 to-teal-600 rounded-full font-semibold hover:shadow-lg hover:shadow-green-500/25 transition-all duration-300 flex items-center gap-2"
+                        href="/Rahul Gogra's CV.pdf"
+                        download
+                        className="px-8 py-3 gradient-primary rounded-full font-semibold shadow-theme transition-theme flex items-center gap-2"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                       >
@@ -332,7 +338,7 @@ export default function Portfolio() {
                     animate={{ y: [0, 10, 0] }}
                     transition={{ duration: 2, repeat: Infinity }}
                 >
-                    <ChevronDown className="w-6 h-6 text-gray-400" />
+                    <ChevronDown className="w-6 h-6 text-muted" />
                 </motion.div>
             </section>
 
@@ -346,10 +352,10 @@ export default function Portfolio() {
                         transition={{ duration: 0.8 }}
                         viewport={{ once: true }}
                     >
-                        <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
+                        <h2 className="text-4xl md:text-5xl font-bold mb-6 gradient-text">
                             About Me
                         </h2>
-                        <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-600 mx-auto"></div>
+                        <div className="w-24 h-1 gradient-primary mx-auto"></div>
                     </motion.div>
 
                     <div className="grid md:grid-cols-2 gap-12 items-center">
@@ -360,18 +366,16 @@ export default function Portfolio() {
                           viewport={{ once: true }}
                         >
                           <div className="relative">
-                            <div className="w-80 h-80 mx-auto bg-gradient-to-r from-blue-500 to-purple-600 rounded-full p-1">
-                              <div className="relative w-full h-full bg-gray-900 rounded-full flex items-center justify-center overflow-hidden">
-                                {/* The actual image */}
+                            <div className="w-80 h-80 mx-auto gradient-primary rounded-full p-1">
+                              <div className="relative w-full h-full bg-primary rounded-full flex items-center justify-center overflow-hidden">
                                 <Image
-                                  src="/RahulGogra.jpg" // Ensure this path is correct relative to your public folder
+                                  src="/RahulGogra.jpg"
                                   alt="Rahul Gogra"
-                                  layout="fill" // Use fill to make it cover the parent
-                                  objectFit="cover" // Cover the area without distortion
-                                  className="rounded-full z-10" // Make it round, ensure it's above the overlay
+                                  layout="fill"
+                                  objectFit="cover"
+                                  className="rounded-full z-10"
                                 />
-                                {/* Gradient overlay, ensure it's below the image */}
-                                <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full opacity-20 z-0"></div>
+                                <div className="absolute inset-0 gradient-primary rounded-full opacity-20 z-0"></div>
                               </div>
                             </div>
                           </div>
@@ -384,7 +388,7 @@ export default function Portfolio() {
                             viewport={{ once: true }}
                             className="space-y-6"
                         >
-                            <p className="text-lg text-gray-300 leading-relaxed">
+                            <p className="text-lg text-secondary leading-relaxed">
                                 I&apos;m a Computer Science student with
                                 experience in full-stack web development, AI
                                 projects, and cybersecurity. I have worked with
@@ -393,7 +397,7 @@ export default function Portfolio() {
                                 performance gains by applying efficient tools
                                 and techniques.
                             </p>
-                            <p className="text-lg text-gray-300 leading-relaxed">
+                            <p className="text-lg text-secondary leading-relaxed">
                                 I am currently pursuing a B.Tech in Computer
                                 Science and Engineering at the Indian Institute
                                 of Information Technology, Manipur (2022-2026).
@@ -405,20 +409,20 @@ export default function Portfolio() {
                             </p>
 
                             <div className="flex flex-wrap gap-4 pt-4">
-                                <div className="bg-gray-800 px-4 py-2 rounded-full">
-                                    <span className="text-blue-400 font-semibold">
+                                <div className="bg-secondary px-4 py-2 rounded-full">
+                                    <span className="text-primary font-semibold">
                                         6+
                                     </span>{" "}
                                     Programming Languages
                                 </div>
-                                <div className="bg-gray-800 px-4 py-2 rounded-full">
-                                    <span className="text-purple-400 font-semibold">
+                                <div className="bg-secondary px-4 py-2 rounded-full">
+                                    <span className="text-primary font-semibold">
                                         10+
                                     </span>{" "}
                                     Web Applications
                                 </div>
-                                <div className="bg-gray-800 px-4 py-2 rounded-full">
-                                    <span className="text-pink-400 font-semibold">
+                                <div className="bg-secondary px-4 py-2 rounded-full">
+                                    <span className="text-primary font-semibold">
                                         60%
                                     </span>{" "}
                                     Performance Gains
@@ -430,7 +434,7 @@ export default function Portfolio() {
             </section>
 
             {/* Skills Section */}
-            <section id="skills" className="py-20 px-4 bg-gray-800/50">
+            <section id="skills" className="py-20 px-4 bg-secondary/50">
                 <div className="max-w-6xl mx-auto">
                     <motion.div
                         className="text-center mb-16"
@@ -439,17 +443,17 @@ export default function Portfolio() {
                         transition={{ duration: 0.8 }}
                         viewport={{ once: true }}
                     >
-                        <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
+                        <h2 className="text-4xl md:text-5xl font-bold mb-6 gradient-text">
                             Skills & Expertise
                         </h2>
-                        <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-600 mx-auto"></div>
+                        <div className="w-24 h-1 gradient-primary mx-auto"></div>
                     </motion.div>
 
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {skills.map((skill, index) => (
                             <motion.div
                                 key={skill.name}
-                                className="bg-gray-800 p-6 rounded-xl border border-gray-700 hover:border-blue-500 transition-all duration-300"
+                                className="bg-secondary p-6 rounded-xl border border-theme hover:border-primary transition-theme"
                                 initial={{ opacity: 0, y: 50 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 transition={{
@@ -459,7 +463,7 @@ export default function Portfolio() {
                                 viewport={{ once: true }}
                                 whileHover={{ scale: 1.05, rotateY: 5 }}
                             >
-                                <div className="text-blue-400 mb-4 flex justify-center">
+                                <div className="text-primary mb-4 flex justify-center">
                                     {skill.icon}
                                 </div>
                                 <h3 className="text-xl font-semibold mb-4 text-center">
@@ -469,7 +473,7 @@ export default function Portfolio() {
                                     {skill.items.map((item, itemIndex) => (
                                         <motion.li
                                             key={item}
-                                            className="text-gray-300 text-center"
+                                            className="text-secondary text-center"
                                             initial={{ opacity: 0, x: -20 }}
                                             whileInView={{ opacity: 1, x: 0 }}
                                             transition={{
@@ -498,17 +502,17 @@ export default function Portfolio() {
                         transition={{ duration: 0.8 }}
                         viewport={{ once: true }}
                     >
-                        <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
+                        <h2 className="text-4xl md:text-5xl font-bold mb-6 gradient-text">
                             Featured Projects
                         </h2>
-                        <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-600 mx-auto"></div>
+                        <div className="w-24 h-1 gradient-primary mx-auto"></div>
                     </motion.div>
 
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {projects.map((project, index) => (
                             <motion.div
                                 key={project.title}
-                                className="bg-gray-800 rounded-xl overflow-hidden border border-gray-700 hover:border-blue-500 transition-all duration-300 group"
+                                className="bg-secondary rounded-xl overflow-hidden border border-theme hover:border-primary transition-theme group"
                                 initial={{ opacity: 0, y: 50 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 transition={{
@@ -526,14 +530,14 @@ export default function Portfolio() {
                                         alt={project.title}
                                         className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
                                     />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent opacity-60"></div>
+                                    <div className="absolute inset-0 bg-gradient-to-t from-primary via-transparent to-transparent opacity-60"></div>
                                 </div>
 
                                 <div className="p-6">
                                     <h3 className="text-xl font-semibold mb-3">
                                         {project.title}
                                     </h3>
-                                    <p className="text-gray-300 mb-4">
+                                    <p className="text-secondary mb-4">
                                         {project.description}
                                     </p>
 
@@ -541,7 +545,7 @@ export default function Portfolio() {
                                         {project.tech.map((tech) => (
                                             <span
                                                 key={tech}
-                                                className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-sm"
+                                                className="px-3 py-1 bg-tertiary/20 text-tertiary rounded-full text-sm"
                                             >
                                                 {tech}
                                             </span>
@@ -551,7 +555,7 @@ export default function Portfolio() {
                                     <div className="flex gap-4">
                                         {project.github ?<motion.a
                                             href={project.github}
-                                            className="flex items-center gap-2 text-gray-300 hover:text-blue-400 transition-colors"
+                                            className="flex items-center gap-2 text-secondary hover:text-primary transition-theme"
                                             whileHover={{ scale: 1.05 }}
                                             whileTap={{ scale: 0.95 }}
                                             target="_blank"
@@ -562,7 +566,7 @@ export default function Portfolio() {
                                         </motion.a>:null}
                                         {project.live? <motion.a
                                             href={project.live}
-                                            className="flex items-center gap-2 text-gray-300 hover:text-purple-400 transition-colors"
+                                            className="flex items-center gap-2 text-secondary hover:text-primary transition-theme"
                                             whileHover={{ scale: 1.05 }}
                                             whileTap={{ scale: 0.95 }}
                                             target="_blank"
@@ -580,7 +584,7 @@ export default function Portfolio() {
             </section>
 
             {/* Contact Section */}
-            <section id="contact" className="py-20 px-4 bg-gray-800/50">
+            <section id="contact" className="py-20 px-4 bg-secondary/50">
                 <div className="max-w-4xl mx-auto">
                     <motion.div
                         className="text-center mb-16"
@@ -589,11 +593,11 @@ export default function Portfolio() {
                         transition={{ duration: 0.8 }}
                         viewport={{ once: true }}
                     >
-                        <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
+                        <h2 className="text-4xl md:text-5xl font-bold mb-6 gradient-text">
                             Let&apos;s Work Together
                         </h2>
-                        <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-600 mx-auto mb-6"></div>
-                        <p className="text-xl text-gray-300">
+                        <div className="w-24 h-1 gradient-primary mx-auto mb-6"></div>
+                        <p className="text-xl text-secondary">
                             Ready to bring your ideas to life? Let&apos;s create
                             something amazing together.
                         </p>
@@ -612,14 +616,14 @@ export default function Portfolio() {
                                 target="_blank"
                                 className="flex items-center gap-4"
                             >
-                                <div className="w-12 h-12 bg-blue-500/20 rounded-full flex items-center justify-center">
-                                    <Mail className="w-6 h-6 text-blue-400" />
+                                <div className="w-12 h-12 bg-tertiary/20 rounded-full flex items-center justify-center">
+                                    <Mail className="w-6 h-6 text-tertiary" />
                                 </div>
                                 <div>
                                     <h3 className="text-lg font-semibold">
                                         Email
                                     </h3>
-                                    <p className="text-gray-300">
+                                    <p className="text-secondary">
                                         rgogra914@gmail.com
                                     </p>
                                 </div>
@@ -630,14 +634,14 @@ export default function Portfolio() {
                                 target="_blank"
                                 className="flex items-center gap-4"
                             >
-                                <div className="w-12 h-12 bg-purple-500/20 rounded-full flex items-center justify-center">
-                                    <Linkedin className="w-6 h-6 text-purple-400" />
+                                <div className="w-12 h-12 bg-tertiary/20 rounded-full flex items-center justify-center">
+                                    <Linkedin className="w-6 h-6 text-tertiary" />
                                 </div>
                                 <div>
                                     <h3 className="text-lg font-semibold">
                                         LinkedIn
                                     </h3>
-                                    <p className="text-gray-300">
+                                    <p className="text-secondary">
                                         linkedin.com/in/rahulgogra
                                     </p>
                                 </div>
@@ -648,14 +652,14 @@ export default function Portfolio() {
                                 target="_blank"
                                 className="flex items-center gap-4"
                             >
-                                <div className="w-12 h-12 bg-pink-500/20 rounded-full flex items-center justify-center">
-                                    <Github className="w-6 h-6 text-pink-400" />
+                                <div className="w-12 h-12 bg-tertiary/20 rounded-full flex items-center justify-center">
+                                    <Github className="w-6 h-6 text-tertiary" />
                                 </div>
                                 <div>
                                     <h3 className="text-lg font-semibold">
                                         GitHub
                                     </h3>
-                                    <p className="text-gray-300">
+                                    <p className="text-secondary">
                                         github.com/RahulGogra
                                     </p>
                                 </div>
@@ -673,26 +677,26 @@ export default function Portfolio() {
                                 <input
                                     type="text"
                                     placeholder="Your Name"
-                                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:border-blue-500 focus:outline-none transition-colors"
+                                    className="w-full px-4 py-3 bg-primary border border-theme rounded-lg focus:border-accent-primary focus:outline-none transition-theme"
                                 />
                             </div>
                             <div>
                                 <input
                                     type="email"
                                     placeholder="Your Email"
-                                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:border-blue-500 focus:outline-none transition-colors"
+                                    className="w-full px-4 py-3 bg-primary border border-theme rounded-lg focus:border-accent-primary focus:outline-none transition-theme"
                                 />
                             </div>
                             <div>
                                 <textarea
                                     placeholder="Your Message"
                                     rows={5}
-                                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:border-blue-500 focus:outline-none transition-colors resize-none"
+                                    className="w-full px-4 py-3 bg-primary border border-theme rounded-lg focus:border-accent-primary focus:outline-none transition-theme resize-none"
                                 ></textarea>
                             </div>
                             <motion.button
                                 type="submit"
-                                className="w-full px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg font-semibold hover:shadow-lg hover:shadow-blue-500/25 transition-all duration-300"
+                                className="w-full px-8 py-3 gradient-primary rounded-lg font-semibold shadow-theme transition-theme"
                                 whileHover={{ scale: 1.02 }}
                                 whileTap={{ scale: 0.98 }}
                             >
@@ -704,9 +708,9 @@ export default function Portfolio() {
             </section>
 
             {/* Footer */}
-            <footer className="py-8 px-4 border-t border-gray-800">
+            <footer className="py-8 px-4 border-t border-theme">
                 <div className="max-w-6xl mx-auto text-center">
-                    <p className="text-gray-400">
+                    <p className="text-muted">
                         © 2024 Rahul Gogra. Crafted with ❤️ using Next.js,
                         TypeScript & Tailwind CSS
                     </p>

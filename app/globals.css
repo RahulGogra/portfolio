@@ -1,26 +1,129 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* globals.css - Add these CSS custom properties */
+
+:root {
+  --transition-colors: all 0.3s ease;
+}
+
+/* Dark Theme (Default) */
+.theme-dark {
+  --bg-primary: #111827;
+  --bg-secondary: #1f2937;
+  --bg-tertiary: #374151;
+  --text-primary: #ffffff;
+  --text-secondary: #d1d5db;
+  --text-muted: #9ca3af;
+  --border-color: #4b5563;
+  --accent-primary: #3b82f6;
+  --accent-secondary: #8b5cf6;
+  --accent-tertiary: #ec4899;
+  --gradient-from: #3b82f6;
+  --gradient-to: #8b5cf6;
+  --shadow-color: rgba(59, 130, 246, 0.25);
+}
+
+/* Light Theme */
+.theme-light {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --bg-tertiary: #e2e8f0;
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --border-color: #cbd5e1;
+  --accent-primary: #2563eb;
+  --accent-secondary: #7c3aed;
+  --accent-tertiary: #db2777;
+  --gradient-from: #2563eb;
+  --gradient-to: #7c3aed;
+  --shadow-color: rgba(37, 99, 235, 0.25);
+}
+
+/* Cyberpunk Theme */
+.theme-cyberpunk {
+  --bg-primary: #0f0f23;
+  --bg-secondary: #1a1a2e;
+  --bg-tertiary: #16213e;
+  --text-primary: #00ffff;
+  --text-secondary: #ff00ff;
+  --text-muted: #888;
+  --border-color: #ff00ff;
+  --accent-primary: #00ffff;
+  --accent-secondary: #ff00ff;
+  --accent-tertiary: #ffff00;
+  --gradient-from: #00ffff;
+  --gradient-to: #ff00ff;
+  --shadow-color: rgba(255, 0, 255, 0.5);
+}
+
+/* Ocean Theme */
+.theme-ocean {
+  --bg-primary: #0c1821;
+  --bg-secondary: #1b2631;
+  --bg-tertiary: #2c3e50;
+  --text-primary: #ecf0f1;
+  --text-secondary: #bdc3c7;
+  --text-muted: #7f8c8d;
+  --border-color: #34495e;
+  --accent-primary: #3498db;
+  --accent-secondary: #2ecc71;
+  --accent-tertiary: #1abc9c;
+  --gradient-from: #3498db;
+  --gradient-to: #2ecc71;
+  --shadow-color: rgba(52, 152, 219, 0.25);
+}
+
+/* Custom utility classes using CSS variables */
+.bg-primary {
+  background-color: var(--bg-primary);
+}
+
+.bg-secondary {
+  background-color: var(--bg-secondary);
+}
+
+.bg-tertiary {
+  background-color: var(--bg-tertiary);
+}
+
+.text-primary {
+  color: var(--text-primary);
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+.border-theme {
+  border-color: var(--border-color);
+}
+
+.gradient-primary {
+  background: linear-gradient(135deg, var(--gradient-from), var(--gradient-to));
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--gradient-from), var(--gradient-to));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.shadow-theme {
+  box-shadow: 0 10px 25px var(--shadow-color);
+}
+
+.transition-theme {
+  transition: var(--transition-colors);
 }
