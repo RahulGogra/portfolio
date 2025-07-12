@@ -711,7 +711,7 @@ export default function Portfolio() {
             <footer className="py-8 px-4 border-t border-theme">
                 <div className="max-w-6xl mx-auto text-center">
                     <p className="text-muted">
-                        © 2024 Rahul Gogra. Crafted with ❤️ using Next.js,
+                        © 2025 Rahul Gogra. Crafted with ❤️ using Next.js,
                         TypeScript & Tailwind CSS
                     </p>
                 </div>
