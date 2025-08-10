@@ -630,7 +630,7 @@ export default function Portfolio() {
                             </Link>
 
                             <Link
-                                href="https://www.linkedin.com/in/rahul-gogra-ba4135203/"
+                                href="https://www.linkedin.com/in/rahul-gogra/"
                                 target="_blank"
                                 className="flex items-center gap-4"
                             >
@@ -642,7 +642,7 @@ export default function Portfolio() {
                                         LinkedIn
                                     </h3>
                                     <p className="text-secondary">
-                                        linkedin.com/in/rahulgogra
+                                        linkedin.com/in/rahul-gogra
                                     </p>
                                 </div>
                             </Link>
