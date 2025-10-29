@@ -37,7 +37,7 @@ export const themes = [
 ];
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('cyberpunk');
+  const [theme, setTheme] = useState<Theme>('light');
 
   useEffect(() => {
     // Load theme from localStorage on mount
