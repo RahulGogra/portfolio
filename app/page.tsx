@@ -321,7 +321,8 @@ export default function Portfolio() {
                       </motion.button>
 
                       <motion.a
-                        href="/Rahul Gogra's CV.pdf"
+                        href="https://drive.google.com/file/d/1gtkKFIwCusxQamjvCVxJ2xXnJ0eU-yVb/view?usp=drive_link"
+                        target="_blank"
                         download
                         className="px-8 py-3 gradient-primary rounded-full font-semibold shadow-theme transition-theme flex items-center gap-2"
                         whileHover={{ scale: 1.05 }}
