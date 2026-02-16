@@ -1,48 +1,93 @@
 // components/CustomCursor.tsx
-'use client' // Important for client-side functionality in Next.js App Router
+'use client';
 
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const throttle = <T extends (...args: any[]) => any>(func: T, limit: number): ((this: ThisParameterType<T>, ...args: Parameters<T>) => void) => {
-  let inThrottle: boolean;
-  return function(this: ThisParameterType<T>, ...args: Parameters<T>): void {
-    if (!inThrottle) {
-      func.apply(this, args);
-      inThrottle = true;
-      setTimeout(() => {
-        inThrottle = false;
-      }, limit);
-    }
-  };
-};
+import { useEffect, useState } from 'react';
+import { motion, useMotionValue, useSpring } from 'framer-motion';
 
 export default function CustomCursor() {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const cursorX = useMotionValue(-100);
+  const cursorY = useMotionValue(-100);
+  
+  const springConfig = { damping: 25, stiffness: 700 };
+  const cursorXSpring = useSpring(cursorX, springConfig);
+  const cursorYSpring = useSpring(cursorY, springConfig);
+
+  const [isHovering, setIsHovering] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
+    const moveCursor = (e: MouseEvent) => {
+      cursorX.set(e.clientX);
+      cursorY.set(e.clientY);
+      if (!isVisible) setIsVisible(true);
     };
 
-    const throttledMouseMove = throttle(handleMouseMove, 16); // Throttle to ~60 FPS
+    const checkHover = (e: MouseEvent) => {
+        const target = e.target as HTMLElement;
+        const isInteractive = 
+            target.tagName === 'A' || 
+            target.tagName === 'BUTTON' || 
+            target.closest('a') !== null || 
+            target.closest('button') !== null ||
+            window.getComputedStyle(target).cursor === 'pointer';
+            
+        setIsHovering(isInteractive);
+    };
 
-    window.addEventListener('mousemove', throttledMouseMove);
-    return () => window.removeEventListener('mousemove', throttledMouseMove);
-  }, []);
+    window.addEventListener('mousemove', moveCursor);
+    window.addEventListener('mouseover', checkHover);
+    
+    const handleMouseOut = (e: MouseEvent) => {
+        if (!e.relatedTarget) setIsVisible(false);
+    };
+    
+    document.addEventListener('mouseout', handleMouseOut);
+    document.addEventListener('mouseenter', () => setIsVisible(true));
+
+    return () => {
+      window.removeEventListener('mousemove', moveCursor);
+      window.removeEventListener('mouseover', checkHover);
+      document.removeEventListener('mouseout', handleMouseOut);
+      document.removeEventListener('mouseenter', () => setIsVisible(true));
+    };
+  }, [cursorX, cursorY, isVisible]);
+
+  // Don't render on server or if not visible
+  if (typeof window === 'undefined') return null;
 
   return (
-    <motion.div
-      className="fixed w-7 h-7 bg-blue-500 rounded-full pointer-events-none z-50 mix-blend-difference"
-      style={{
-        left: mousePosition.x - 12,
-        top: mousePosition.y - 12,
-      }}
-      animate={{
-        scale: [1, 1.2, 1],
-      }}
-      transition={{ duration: 0.5, repeat: Infinity }}
-    />
+    <>
+      {/* Main Dot */}
+      <motion.div
+        className={`fixed top-0 left-0 w-3 h-3 bg-purple-500 rounded-full pointer-events-none z-9999 mix-blend-difference transition-opacity duration-300 ${isVisible ? 'opacity-100' : 'opacity-0'}`}
+        style={{
+          translateX: cursorX,
+          translateY: cursorY,
+          x: '-50%',
+          y: '-50%',
+        }}
+      />
+      
+      {/* Trailing Ring */}
+      <motion.div
+        className={`fixed top-0 left-0 w-8 h-8 border border-purple-500 rounded-full pointer-events-none z-9998 mix-blend-difference transition-opacity duration-300 ${isVisible ? 'opacity-100' : 'opacity-0'}`}
+        style={{
+          translateX: cursorXSpring,
+          translateY: cursorYSpring,
+          x: '-50%',
+          y: '-50%',
+        }}
+        animate={{
+          scale: isHovering ? 2.5 : 1,
+          backgroundColor: isHovering ? 'rgba(168, 85, 247, 0.1)' : 'transparent',
+          borderColor: isHovering ? 'transparent' : 'rgb(168, 85, 247)',
+        }}
+        transition={{
+            scale: { duration: 0.2 },
+            backgroundColor: { duration: 0.2 },
+            borderColor: { duration: 0.2 }
+        }}
+      />
+    </>
   );
 }

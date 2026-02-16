@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useSpring } from "framer-motion";
 import {
     ChevronDown,
     Github,
@@ -16,6 +16,8 @@ import {
     X,
     ArrowRight,
     Download,
+    Briefcase,
+    Calendar,
 } from "lucide-react";
 
 // Import the CustomCursor component
@@ -24,36 +26,21 @@ import ThemeSwitcher from "../components/ThemeSwitcher";
 import Image from "next/image";
 import Link from "next/link";
 
-type Position = {
-  initialX: number;
-  initialY: number;
-  targetX: number;
-  targetY: number;
-  duration: number;
-};
-
 export default function Portfolio() {
     const [activeSection, setActiveSection] = useState("home");
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [positions, setPositions] = useState<Position[]>([]);
-
-    useEffect(() => {
-        if (typeof window !== "undefined") {
-        const newPositions = Array.from({ length: 50 }, () => ({
-            initialX: Math.random() * window.innerWidth,
-            initialY: Math.random() * window.innerHeight,
-            targetX: Math.random() * window.innerWidth,
-            targetY: Math.random() * window.innerHeight,
-            duration: Math.random() * 10 + 20,
-        }));
-        setPositions(newPositions);
-        }
-    }, []);
+    
+    const { scrollYProgress } = useScroll();
+    const scaleX = useSpring(scrollYProgress, {
+        stiffness: 100,
+        damping: 30,
+        restDelta: 0.001
+    });
 
     // Scroll spy for active section
     useEffect(() => {
         const handleScroll = () => {
-            const sections = ["home", "about", "skills", "projects", "contact"];
+            const sections = ["home", "about", "skills", "experience", "projects", "contact"];
             const scrollPosition = window.scrollY + 100;
 
             sections.forEach((section) => {
@@ -114,53 +101,96 @@ export default function Portfolio() {
         {
             name: "Programming Languages",
             icon: <Code className="w-8 h-8" />,
-            items: ["JavaScript", "TypeScript", "PHP", "C/C++", "SQL"],
+            items: [
+                { name: "JavaScript", icon: "https://cdn.simpleicons.org/javascript" },
+                { name: "TypeScript", icon: "https://cdn.simpleicons.org/typescript" },
+                { name: "PHP", icon: "https://cdn.simpleicons.org/php" },
+                { name: "C++", icon: "https://cdn.simpleicons.org/cplusplus" },
+                { name: "SQL", icon: "https://cdn.simpleicons.org/mysql" },
+            ],
         },
         {
             name: "Frontend Development",
-            icon: <Code className="w-8 h-8" />,
+            icon: <Palette className="w-8 h-8" />,
             items: [
-                "HTML5",
-                "CSS3",
-                "React.js",
-                "Next.js",
-                "Bootstrap",
-                "TailwindCSS",
+                { name: "HTML5", icon: "https://cdn.simpleicons.org/html5" },
+                { name: "CSS", icon: "https://cdn.simpleicons.org/css" },
+                { name: "React.js", icon: "https://cdn.simpleicons.org/react" },
+                { name: "Next.js", icon: "https://cdn.simpleicons.org/nextdotjs", className: "dark:invert" },
+                { name: "Bootstrap", icon: "https://cdn.simpleicons.org/bootstrap" },
+                { name: "TailwindCSS", icon: "https://cdn.simpleicons.org/tailwindcss" },
             ],
         },
         {
             name: "Backend Development",
             icon: <Code className="w-8 h-8" />,
-            items: ["Node.js", "Express.js", "PHP"],
+            items: [
+                { name: "Node.js", icon: "https://cdn.simpleicons.org/nodedotjs" },
+                { name: "Express.js", icon: "https://cdn.simpleicons.org/express", className: "dark:invert" },
+                { name: "PHP", icon: "https://cdn.simpleicons.org/php" },
+            ],
         },
         {
             name: "Database Technologies",
-            icon: <Palette className="w-8 h-8" />,
-            items: ["MongoDB", "MySQL", "Firebase", "Google Cloud"],
+            icon: <Briefcase className="w-8 h-8" />,
+            items: [
+                { name: "MongoDB", icon: "https://cdn.simpleicons.org/mongodb" },
+                { name: "MySQL", icon: "https://cdn.simpleicons.org/mysql" },
+                { name: "Firebase", icon: "https://cdn.simpleicons.org/firebase" },
+                { name: "Google Cloud", icon: "https://cdn.simpleicons.org/googlecloud" },
+            ],
         },
         {
             name: "Developer Tools",
             icon: <Smartphone className="w-8 h-8" />,
-            items: ["Git", "GitHub", "VS Code", "Chrome DevTools", "Postman"],
+            items: [
+                { name: "Git", icon: "https://cdn.simpleicons.org/git" },
+                { name: "GitHub", icon: "https://cdn.simpleicons.org/github", className: "dark:invert" },
+                { name: "Chrome DevTools", icon: "https://cdn.simpleicons.org/googlechrome" },
+                { name: "Postman", icon: "https://cdn.simpleicons.org/postman" },
+            ],
         },
         {
             name: "Other Skills",
-            icon: <Code className="w-8 h-8" />,
+            icon: <ExternalLink className="w-8 h-8" />,
             items: [
-                "RESTful API Integration",
-                "Data Structures & Algorithms",
-                "UI/UX Design Principles",
+                { name: "RESTful API", icon: "https://cdn.simpleicons.org/fastapi" },
+                { name: "DSA", icon: "https://cdn.simpleicons.org/leetcode" },
+                { name: "UI/UX", icon: "https://cdn.simpleicons.org/figma" },
             ],
         },
     ];
 
+    const experiences = [
+        {
+            year: "May 2025 – Present",
+            role: "Full Stack Development Intern",
+            company: "Quantinent Analytics Pvt. Ltd.",
+            description: "Engineered scalable frontend and backend features across 5+ modules using React, Node.js, Express, and MongoDB. Designed and deployed 15+ REST API endpoints, improving data retrieval efficiency by 30%. Optimized MongoDB queries and schema design, reducing average API response time by 25%.",
+        },
+        {
+            year: "May 2024 – Aug 2024",
+            role: "Backend Development Intern",
+            company: "Blueplanet Info Solutions",
+            description: "Developed a full-stack event management system supporting 1,000+ users using PHP and MySQL. Implemented secure authentication, role-based access control, and session handling. Integrated automated email and SMS notifications, increasing user engagement by 35%. Applied indexing and query optimization techniques, achieving 40% faster server response times.",
+        },
+        {
+            year: "2022 - 2026",
+            role: "B.Tech in Computer Science",
+            company: "IIIT Manipur",
+            description: "Pursuing Bachelor of Technology in Computer Science and Engineering. Active member of the coding club and hackathon participant.",
+        },
+    ];
+
     return (
-        <div className="min-h-screen bg-primary text-primary overflow-x-hidden transition-theme">
+        <div className="min-h-screen bg-primary text-primary overflow-x-hidden transition-theme selection:bg-purple-500/30 selection:text-purple-500">
             <CustomCursor />
+            
+            <motion.div className="fixed top-0 left-0 right-0 h-1 bg-purple-500 origin-left z-100" style={{ scaleX }} />
 
             {/* Navigation */}
             <motion.nav
-                className="fixed top-0 left-0 right-0 z-40 bg-primary/80 backdrop-blur-lg border-b border-theme"
+                className="fixed top-0 left-0 right-0 z-50 bg-primary/70 backdrop-blur-xl border-b border-theme/50 supports-[backdrop-filter]:bg-primary/60"
                 initial={{ y: -100 }}
                 animate={{ y: 0 }}
                 transition={{ duration: 0.6 }}
@@ -180,6 +210,7 @@ export default function Portfolio() {
                                 "home",
                                 "about",
                                 "skills",
+                                "experience",
                                 "projects",
                                 "contact",
                             ].map((item) => (
@@ -233,6 +264,7 @@ export default function Portfolio() {
                                     "home",
                                     "about",
                                     "skills",
+                                    "experience",
                                     "projects",
                                     "contact",
                                 ].map((item) => (
@@ -254,46 +286,83 @@ export default function Portfolio() {
             {/* Hero Section */}
             <section
                 id="home"
-                className="min-h-screen flex items-center justify-center relative overflow-hidden"
+                className="min-h-screen flex items-center justify-center relative overflow-hidden pt-16"
             >
-                {/* Background Animation */}
-                <div className="absolute inset-0 opacity-20">
-                    {positions.map((pos, i) => (
-                    <motion.div
-                        key={i}
-                        className="absolute w-2 h-2 rounded-full"
-                        style={{ backgroundColor: 'var(--accent-primary)' }}
-                        initial={{ x: pos.initialX, y: pos.initialY }}
-                        animate={{ x: pos.targetX, y: pos.targetY }}
-                        transition={{
-                        duration: pos.duration,
-                        repeat: Infinity,
-                        repeatType: "reverse",
-                        }}
-                    />
-                    ))}
+                {/* Modern Background */}
+                <div className="absolute inset-0 w-full h-full bg-primary">
+                    {/* Grid Pattern */}
+                    <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-size-[24px_24px]"></div>
+                    {/* Radial Mask */}
+                    <div className="absolute inset-0 bg-primary gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)"></div>
                 </div>
 
-                <div className="text-center z-10 px-4">
+                {/* Animated Gradient Blobs */}
+                <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                    <motion.div
+                        animate={{
+                            scale: [1, 1.2, 1],
+                            opacity: [0.3, 0.5, 0.3],
+                            x: [0, 100, 0],
+                            y: [0, -50, 0],
+                        }}
+                        transition={{
+                            duration: 10,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                        }}
+                        className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-[100px]"
+                    />
+                    <motion.div
+                        animate={{
+                            scale: [1.2, 1, 1.2],
+                            opacity: [0.3, 0.5, 0.3],
+                            x: [0, -100, 0],
+                            y: [0, 50, 0],
+                        }}
+                        transition={{
+                            duration: 15,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                        }}
+                        className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-[100px]"
+                    />
+                </div>
+
+                <div className="text-center z-10 px-4 max-w-5xl mx-auto">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.5 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.5 }}
+                        className="mb-8 inline-flex items-center gap-2 px-4 py-2 rounded-full border border-purple-500/30 bg-purple-500/10 text-purple-500 text-sm font-medium"
+                    >
+                        <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-purple-500"></span>
+                        </span>
+                        Available for new opportunities
+                    </motion.div>
+
                     <motion.h1
-                        className="text-6xl md:text-8xl font-bold mb-6"
+                        className="text-5xl md:text-7xl lg:text-8xl font-bold mb-8 tracking-tight leading-tight"
                         initial={{ opacity: 0, y: 50 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8, delay: 0.2 }}
                     >
-                        <span className="gradient-text">
+                        Building <span className="text-transparent bg-clip-text bg-linear-to-r from-purple-600 to-blue-600 dark:from-purple-400 dark:to-blue-400">Digital</span>
+                        <br />
+                        <span className="text-transparent bg-clip-text bg-linear-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
                             Rahul Gogra
                         </span>
                     </motion.h1>
 
                     <motion.p
-                        className="text-xl md:text-2xl text-secondary mb-8"
+                        className="text-xl md:text-2xl text-secondary mb-12 max-w-3xl mx-auto leading-relaxed font-light"
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8, delay: 0.4 }}
                     >
-                        Full Stack Web Developer | AI Enthusiast | Cybersecurity
-                        Advocate
+                        Full Stack Developer specializing in building exceptional digital experiences. 
+                        Blending technical expertise in <span className="text-primary font-medium">AI</span> and <span className="text-primary font-medium">Cybersecurity</span> to create robust, scalable solutions.
                     </motion.p>
 
                     <motion.div
@@ -304,7 +373,7 @@ export default function Portfolio() {
                     >
                       <motion.button
                         onClick={() => scrollToSection('projects')}
-                        className="px-8 py-3 gradient-primary rounded-full font-semibold shadow-theme transition-theme flex items-center gap-2"
+                        className="px-8 py-4 gradient-primary rounded-full font-semibold shadow-lg shadow-purple-500/20 hover:shadow-purple-500/40 transition-all flex items-center gap-2"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                       >
@@ -313,7 +382,7 @@ export default function Portfolio() {
 
                       <motion.button
                         onClick={() => scrollToSection('contact')}
-                        className="px-8 py-3 border-2 border-theme rounded-full font-semibold hover:bg-tertiary transition-theme"
+                        className="px-8 py-4 border border-theme bg-secondary/50 backdrop-blur-sm rounded-full font-semibold hover:bg-secondary transition-all"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                       >
@@ -324,7 +393,7 @@ export default function Portfolio() {
                         href="https://drive.google.com/file/d/1gtkKFIwCusxQamjvCVxJ2xXnJ0eU-yVb/view?usp=drive_link"
                         target="_blank"
                         download
-                        className="px-8 py-3 gradient-primary rounded-full font-semibold shadow-theme transition-theme flex items-center gap-2"
+                        className="px-8 py-4 gradient-primary rounded-full font-semibold shadow-lg shadow-purple-500/20 hover:shadow-purple-500/40 transition-all flex items-center gap-2"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                       >
@@ -344,7 +413,7 @@ export default function Portfolio() {
             </section>
 
             {/* About Section */}
-            <section id="about" className="py-20 px-4">
+            <section id="about" className="py-24 px-4">
                 <div className="max-w-6xl mx-auto">
                     <motion.div
                         className="text-center mb-16"
@@ -366,17 +435,16 @@ export default function Portfolio() {
                           transition={{ duration: 0.8 }}
                           viewport={{ once: true }}
                         >
-                          <div className="relative">
-                            <div className="w-80 h-80 mx-auto gradient-primary rounded-full p-1">
+                          <div className="relative group">
+                            <div className="absolute -inset-1 bg-linear-to-r from-purple-600 to-blue-600 rounded-full blur opacity-25 group-hover:opacity-75 transition duration-1000 group-hover:duration-200"></div>
+                            <div className="relative w-80 h-80 mx-auto rounded-full p-1 bg-primary ring-1 ring-theme">
                               <div className="relative w-full h-full bg-primary rounded-full flex items-center justify-center overflow-hidden">
                                 <Image
                                   src="/RahulGogra.jpg"
                                   alt="Rahul Gogra"
-                                  layout="fill"
-                                  objectFit="cover"
-                                  className="rounded-full z-10"
+                                  fill
+                                  className="rounded-full z-10 transition-transform duration-500 group-hover:scale-110 object-cover"
                                 />
-                                <div className="absolute inset-0 gradient-primary rounded-full opacity-20 z-0"></div>
                               </div>
                             </div>
                           </div>
@@ -410,19 +478,19 @@ export default function Portfolio() {
                             </p>
 
                             <div className="flex flex-wrap gap-4 pt-4">
-                                <div className="bg-secondary px-4 py-2 rounded-full">
+                                <div className="bg-secondary/50 backdrop-blur-sm border border-theme px-6 py-3 rounded-2xl hover:border-purple-500/50 transition-colors">
                                     <span className="text-primary font-semibold">
                                         6+
                                     </span>{" "}
                                     Programming Languages
                                 </div>
-                                <div className="bg-secondary px-4 py-2 rounded-full">
+                                <div className="bg-secondary/50 backdrop-blur-sm border border-theme px-6 py-3 rounded-2xl hover:border-purple-500/50 transition-colors">
                                     <span className="text-primary font-semibold">
                                         10+
                                     </span>{" "}
                                     Web Applications
                                 </div>
-                                <div className="bg-secondary px-4 py-2 rounded-full">
+                                <div className="bg-secondary/50 backdrop-blur-sm border border-theme px-6 py-3 rounded-2xl hover:border-purple-500/50 transition-colors">
                                     <span className="text-primary font-semibold">
                                         60%
                                     </span>{" "}
@@ -435,8 +503,14 @@ export default function Portfolio() {
             </section>
 
             {/* Skills Section */}
-            <section id="skills" className="py-20 px-4 bg-secondary/50">
-                <div className="max-w-6xl mx-auto">
+            <section id="skills" className="py-24 px-4 relative overflow-hidden">
+                {/* Background Elements */}
+                <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+                    <div className="absolute top-0 left-1/4 w-full h-full bg-linear-to-b from-purple-500/5 to-transparent opacity-50 blur-3xl"></div>
+                    <div className="absolute bottom-0 right-1/4 w-full h-full bg-linear-to-t from-blue-500/5 to-transparent opacity-50 blur-3xl"></div>
+                </div>
+
+                <div className="max-w-6xl mx-auto relative z-10">
                     <motion.div
                         className="text-center mb-16"
                         initial={{ opacity: 0, y: 50 }}
@@ -454,39 +528,85 @@ export default function Portfolio() {
                         {skills.map((skill, index) => (
                             <motion.div
                                 key={skill.name}
-                                className="bg-secondary p-6 rounded-xl border border-theme hover:border-primary transition-theme"
-                                initial={{ opacity: 0, y: 50 }}
+                                className="group relative h-full"
+                                initial={{ opacity: 0, y: 20 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 transition={{
-                                    duration: 0.8,
+                                    duration: 0.5,
                                     delay: index * 0.1,
                                 }}
                                 viewport={{ once: true }}
-                                whileHover={{ scale: 1.05, rotateY: 5 }}
                             >
-                                <div className="text-primary mb-4 flex justify-center">
-                                    {skill.icon}
+                                <div className="relative h-full bg-secondary/30 backdrop-blur-sm p-8 rounded-2xl border border-theme hover:border-purple-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-purple-500/10">
+                                    <div className="mb-6 inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary/50 text-purple-500 group-hover:bg-purple-500 group-hover:text-white transition-all duration-300 shadow-lg shadow-purple-500/10 group-hover:shadow-purple-500/30">
+                                        {skill.icon}
+                                    </div>
+                                    
+                                    <h3 className="text-xl font-bold mb-4 text-primary group-hover:text-purple-500 transition-colors duration-300">
+                                        {skill.name}
+                                    </h3>
+                                    
+                                    <div className="flex flex-wrap gap-3">
+                                        {skill.items.map((item) => (
+                                            <div
+                                                key={item.name}
+                                                className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-full bg-primary/50 text-secondary border border-theme group-hover:border-purple-500/20 group-hover:bg-purple-500/5 group-hover:text-primary transition-all duration-300 hover:scale-105 cursor-default"
+                                            >
+                                                <img src={item.icon} alt={item.name} className={`w-4 h-4 ${item.className || ''}`} />
+                                                <span>{item.name}</span>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
-                                <h3 className="text-xl font-semibold mb-4 text-center">
-                                    {skill.name}
-                                </h3>
-                                <ul className="space-y-2">
-                                    {skill.items.map((item, itemIndex) => (
-                                        <motion.li
-                                            key={item}
-                                            className="text-secondary text-center"
-                                            initial={{ opacity: 0, x: -20 }}
-                                            whileInView={{ opacity: 1, x: 0 }}
-                                            transition={{
-                                                duration: 0.5,
-                                                delay: itemIndex * 0.1,
-                                            }}
-                                            viewport={{ once: true }}
-                                        >
-                                            {item}
-                                        </motion.li>
-                                    ))}
-                                </ul>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Experience Section */}
+            <section id="experience" className="py-24 px-4">
+                <div className="max-w-4xl mx-auto">
+                    <motion.div
+                        className="text-center mb-16"
+                        initial={{ opacity: 0, y: 50 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8 }}
+                        viewport={{ once: true }}
+                    >
+                        <h2 className="text-4xl md:text-5xl font-bold mb-6 gradient-text">
+                            Experience & Education
+                        </h2>
+                        <div className="w-24 h-1 gradient-primary mx-auto"></div>
+                    </motion.div>
+
+                    <div className="space-y-8">
+                        {experiences.map((exp, index) => (
+                            <motion.div
+                                key={index}
+                                className="relative pl-8 border-l-2 border-theme"
+                                initial={{ opacity: 0, x: -20 }}
+                                whileInView={{ opacity: 1, x: 0 }}
+                                transition={{ duration: 0.5, delay: index * 0.1 }}
+                                viewport={{ once: true }}
+                            >
+                                <div className="absolute -left-2.25 top-0 w-4 h-4 rounded-full bg-purple-500"></div>
+                                <div className="bg-secondary/30 p-6 rounded-2xl border border-theme hover:border-purple-500/50 transition-colors">
+                                    <div className="flex flex-wrap justify-between items-start gap-4 mb-4">
+                                        <div>
+                                            <h3 className="text-xl font-bold text-primary">{exp.role}</h3>
+                                            <div className="flex items-center gap-2 text-purple-500 font-medium mt-1">
+                                                <Briefcase className="w-4 h-4" />
+                                                <span>{exp.company}</span>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2 text-sm text-secondary bg-primary/50 px-3 py-1 rounded-full border border-theme">
+                                            <Calendar className="w-3 h-3" />
+                                            <span>{exp.year}</span>
+                                        </div>
+                                    </div>
+                                    <p className="text-secondary leading-relaxed">{exp.description}</p>
+                                </div>
                             </motion.div>
                         ))}
                     </div>
@@ -494,7 +614,7 @@ export default function Portfolio() {
             </section>
 
             {/* Projects Section */}
-            <section id="projects" className="py-20 px-4">
+            <section id="projects" className="py-24 px-4">
                 <div className="max-w-6xl mx-auto">
                     <motion.div
                         className="text-center mb-16"
@@ -513,7 +633,7 @@ export default function Portfolio() {
                         {projects.map((project, index) => (
                             <motion.div
                                 key={project.title}
-                                className="bg-secondary rounded-xl overflow-hidden border border-theme hover:border-primary transition-theme group"
+                                className="bg-secondary/30 rounded-2xl overflow-hidden border border-theme hover:border-purple-500/50 transition-all duration-300 group hover:shadow-xl hover:shadow-purple-500/10"
                                 initial={{ opacity: 0, y: 50 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 transition={{
@@ -521,7 +641,7 @@ export default function Portfolio() {
                                     delay: index * 0.1,
                                 }}
                                 viewport={{ once: true }}
-                                whileHover={{ scale: 1.02 }}
+                                whileHover={{ y: -10 }}
                             >
                                 <div className="relative overflow-hidden">
                                     <Image
@@ -529,24 +649,24 @@ export default function Portfolio() {
                                         height={400}
                                         src={project.image}
                                         alt={project.title}
-                                        className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
+                                        className="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-500"
                                     />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-primary via-transparent to-transparent opacity-60"></div>
+                                    <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                                 </div>
 
-                                <div className="p-6">
+                                <div className="p-8">
                                     <h3 className="text-xl font-semibold mb-3">
                                         {project.title}
                                     </h3>
-                                    <p className="text-secondary mb-4">
+                                    <p className="text-secondary mb-6 line-clamp-3">
                                         {project.description}
                                     </p>
 
-                                    <div className="flex flex-wrap gap-2 mb-4">
+                                    <div className="flex flex-wrap gap-2 mb-6">
                                         {project.tech.map((tech) => (
                                             <span
                                                 key={tech}
-                                                className="px-3 py-1 bg-tertiary/20 text-tertiary rounded-full text-sm"
+                                                className="px-3 py-1 bg-purple-500/10 text-purple-500 rounded-full text-xs font-medium border border-purple-500/20"
                                             >
                                                 {tech}
                                             </span>
@@ -556,7 +676,7 @@ export default function Portfolio() {
                                     <div className="flex gap-4">
                                         {project.github ?<motion.a
                                             href={project.github}
-                                            className="flex items-center gap-2 text-secondary hover:text-primary transition-theme"
+                                            className="flex items-center gap-2 text-sm font-medium text-secondary hover:text-purple-500 transition-colors"
                                             whileHover={{ scale: 1.05 }}
                                             whileTap={{ scale: 0.95 }}
                                             target="_blank"
@@ -567,7 +687,7 @@ export default function Portfolio() {
                                         </motion.a>:null}
                                         {project.live? <motion.a
                                             href={project.live}
-                                            className="flex items-center gap-2 text-secondary hover:text-primary transition-theme"
+                                            className="flex items-center gap-2 text-sm font-medium text-secondary hover:text-purple-500 transition-colors"
                                             whileHover={{ scale: 1.05 }}
                                             whileTap={{ scale: 0.95 }}
                                             target="_blank"
@@ -585,7 +705,7 @@ export default function Portfolio() {
             </section>
 
             {/* Contact Section */}
-            <section id="contact" className="py-20 px-4 bg-secondary/50">
+            <section id="contact" className="py-24 px-4 bg-secondary/30">
                 <div className="max-w-4xl mx-auto">
                     <motion.div
                         className="text-center mb-16"
@@ -617,8 +737,8 @@ export default function Portfolio() {
                                 target="_blank"
                                 className="flex items-center gap-4"
                             >
-                                <div className="w-12 h-12 bg-tertiary/20 rounded-full flex items-center justify-center">
-                                    <Mail className="w-6 h-6 text-tertiary" />
+                                <div className="w-14 h-14 bg-purple-500/10 rounded-2xl flex items-center justify-center text-purple-500">
+                                    <Mail className="w-6 h-6" />
                                 </div>
                                 <div>
                                     <h3 className="text-lg font-semibold">
@@ -635,8 +755,8 @@ export default function Portfolio() {
                                 target="_blank"
                                 className="flex items-center gap-4"
                             >
-                                <div className="w-12 h-12 bg-tertiary/20 rounded-full flex items-center justify-center">
-                                    <Linkedin className="w-6 h-6 text-tertiary" />
+                                <div className="w-14 h-14 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-500">
+                                    <Linkedin className="w-6 h-6" />
                                 </div>
                                 <div>
                                     <h3 className="text-lg font-semibold">
@@ -653,8 +773,8 @@ export default function Portfolio() {
                                 target="_blank"
                                 className="flex items-center gap-4"
                             >
-                                <div className="w-12 h-12 bg-tertiary/20 rounded-full flex items-center justify-center">
-                                    <Github className="w-6 h-6 text-tertiary" />
+                                <div className="w-14 h-14 bg-gray-500/10 rounded-2xl flex items-center justify-center text-gray-500 dark:text-gray-400">
+                                    <Github className="w-6 h-6" />
                                 </div>
                                 <div>
                                     <h3 className="text-lg font-semibold">
@@ -678,26 +798,26 @@ export default function Portfolio() {
                                 <input
                                     type="text"
                                     placeholder="Your Name"
-                                    className="w-full px-4 py-3 bg-primary border border-theme rounded-lg focus:border-accent-primary focus:outline-none transition-theme"
+                                    className="w-full px-6 py-4 bg-primary/50 border border-theme rounded-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 focus:outline-none transition-all"
                                 />
                             </div>
                             <div>
                                 <input
                                     type="email"
                                     placeholder="Your Email"
-                                    className="w-full px-4 py-3 bg-primary border border-theme rounded-lg focus:border-accent-primary focus:outline-none transition-theme"
+                                    className="w-full px-6 py-4 bg-primary/50 border border-theme rounded-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 focus:outline-none transition-all"
                                 />
                             </div>
                             <div>
                                 <textarea
                                     placeholder="Your Message"
                                     rows={5}
-                                    className="w-full px-4 py-3 bg-primary border border-theme rounded-lg focus:border-accent-primary focus:outline-none transition-theme resize-none"
+                                    className="w-full px-6 py-4 bg-primary/50 border border-theme rounded-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 focus:outline-none transition-all resize-none"
                                 ></textarea>
                             </div>
                             <motion.button
                                 type="submit"
-                                className="w-full px-8 py-3 gradient-primary rounded-lg font-semibold shadow-theme transition-theme"
+                                className="w-full px-8 py-4 gradient-primary rounded-xl font-semibold shadow-lg shadow-purple-500/20 hover:shadow-purple-500/40 transition-all"
                                 whileHover={{ scale: 1.02 }}
                                 whileTap={{ scale: 0.98 }}
                             >
@@ -712,8 +832,8 @@ export default function Portfolio() {
             <footer className="py-8 px-4 border-t border-theme">
                 <div className="max-w-6xl mx-auto text-center">
                     <p className="text-muted">
-                        © 2025 Rahul Gogra. Crafted with ❤️ using Next.js,
-                        TypeScript & Tailwind CSS
+                        {`© ${new Date().getFullYear()} Rahul Gogra. Crafted with ❤️ using Next.js,
+                        TypeScript & Tailwind CSS`}
                     </p>
                 </div>
             </footer>
