@@ -733,7 +733,7 @@ export default function Portfolio() {
                             className="space-y-8"
                         >
                             <Link
-                                href="mailto:rgogra914@gmail.com"
+                                href="https://mail.google.com/mail/?view=cm&to=rgogra914@gmail.com"
                                 target="_blank"
                                 className="flex items-center gap-4"
                             >
@@ -787,16 +787,24 @@ export default function Portfolio() {
                             </Link>
                         </motion.div>
 
-                        <motion.form
+                        <motion.div
                             initial={{ opacity: 0, x: 50 }}
                             whileInView={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.8 }}
                             viewport={{ once: true }}
-                            className="space-y-6"
                         >
+                            <form
+                                action="https://formsubmit.co/86fa67bd92964862a5326d891947c610"
+                                method="POST"
+                                className="space-y-6"
+                            >
+                                <input type="hidden" name="_captcha" value="false" />
+                                <input type="hidden" name="_template" value="table" />
                             <div>
                                 <input
                                     type="text"
+                                    name="name"
+                                    required
                                     placeholder="Your Name"
                                     className="w-full px-6 py-4 bg-primary/50 border border-theme rounded-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 focus:outline-none transition-all"
                                 />
@@ -804,12 +812,16 @@ export default function Portfolio() {
                             <div>
                                 <input
                                     type="email"
+                                    name="email"
+                                    required
                                     placeholder="Your Email"
                                     className="w-full px-6 py-4 bg-primary/50 border border-theme rounded-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 focus:outline-none transition-all"
                                 />
                             </div>
                             <div>
                                 <textarea
+                                    name="message"
+                                    required
                                     placeholder="Your Message"
                                     rows={5}
                                     className="w-full px-6 py-4 bg-primary/50 border border-theme rounded-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 focus:outline-none transition-all resize-none"
@@ -823,7 +835,8 @@ export default function Portfolio() {
                             >
                                 Send Message
                             </motion.button>
-                        </motion.form>
+                            </form>
+                        </motion.div>
                     </div>
                 </div>
             </section>
