@@ -390,7 +390,7 @@ export default function Portfolio() {
                       </motion.button>
 
                       <motion.a
-                        href="https://drive.google.com/file/d/1gtkKFIwCusxQamjvCVxJ2xXnJ0eU-yVb/view?usp=drive_link"
+                        href="https://drive.google.com/file/d/1_CAEVEdzeQJfhONQWTixHZRe-exbNziu/view?usp=drive_link"
                         target="_blank"
                         download
                         className="px-8 py-4 gradient-primary rounded-full font-semibold shadow-lg shadow-purple-500/20 hover:shadow-purple-500/40 transition-all flex items-center gap-2"
