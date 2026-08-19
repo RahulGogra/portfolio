@@ -83,7 +83,7 @@ function Scene({ iconUrl, name, portal, accentHex }: { iconUrl?: string, name: s
         position={[0, 0, 0]} 
         zIndexRange={[100, 0]}
         pointerEvents="none"
-        portal={portal}
+        portal={portal as React.RefObject<HTMLElement>}
       >
         <div className="flex flex-col items-center justify-center select-none p-4">
           {iconUrl ? (
