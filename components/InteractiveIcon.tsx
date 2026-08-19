@@ -26,7 +26,7 @@ export default function InteractiveIcon({ iconUrl, name, accentHex = "#a855f7" }
   );
 }
 
-function Scene({ iconUrl, name, portal, accentHex }: { iconUrl?: string, name: string, portal: React.RefObject<HTMLElement>, accentHex: string }) {
+function Scene({ iconUrl, name, portal, accentHex }: { iconUrl?: string, name: string, portal: React.RefObject<HTMLDivElement | null>, accentHex: string }) {
   const meshRef = useRef<THREE.Mesh>(null);
   const [hovered, setHover] = useState(false);
   
