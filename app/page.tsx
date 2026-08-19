@@ -398,8 +398,8 @@ export default function Portfolio() {
                             Get In Touch
                         </motion.button>
 
-                        <motion.a
-                            href="https://drive.google.com/file/d/1-O7Td9bZ8z7Lm6xFbvzOxQNUEHpvF5SC/view?usp=sharing"
+                        <motion.a 
+                            href="https://drive.google.com/file/d/1Dj88Xw7nSQfN45swWvmTH_XO1GUCxOnb/view?usp=sharing"
                             target="_blank"
                             download
                             className="px-8 py-4 gradient-primary rounded-full font-semibold shadow-lg shadow-purple-500/20 hover:shadow-purple-500/40 transition-all flex items-center gap-2"
