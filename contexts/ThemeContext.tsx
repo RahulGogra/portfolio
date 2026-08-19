@@ -1,9 +1,8 @@
-// contexts/ThemeContext.tsx
 'use client';
 
 import { createContext, useContext, useEffect, useState } from 'react';
 
-type Theme = 'dark' | 'light' | 'cyberpunk' | 'ocean';
+type Theme = 'amethyst' | 'sapphire' | 'emerald' | 'rose';
 
 interface ThemeContextType {
   theme: Theme;
@@ -15,32 +14,31 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const themes = [
   { 
-    name: 'dark' as Theme, 
-    label: 'Dark', 
-    colors: 'from-gray-900 to-gray-800' 
+    name: 'amethyst' as Theme, 
+    label: 'Amethyst', 
+    colors: 'from-purple-500 to-pink-500' 
   },
   { 
-    name: 'light' as Theme, 
-    label: 'Light', 
-    colors: 'from-gray-100 to-white' 
+    name: 'sapphire' as Theme, 
+    label: 'Sapphire', 
+    colors: 'from-blue-500 to-cyan-400' 
   },
   { 
-    name: 'cyberpunk' as Theme, 
-    label: 'Cyberpunk', 
-    colors: 'from-purple-900 to-pink-900' 
+    name: 'emerald' as Theme, 
+    label: 'Emerald', 
+    colors: 'from-emerald-500 to-blue-500' 
   },
   { 
-    name: 'ocean' as Theme, 
-    label: 'Ocean', 
-    colors: 'from-blue-900 to-teal-900' 
+    name: 'rose' as Theme, 
+    label: 'Rose', 
+    colors: 'from-rose-500 to-orange-400' 
   },
 ];
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('light');
+  const [theme, setTheme] = useState<Theme>('amethyst');
 
   useEffect(() => {
-    // Load theme from localStorage on mount
     const savedTheme = localStorage.getItem('theme') as Theme;
     if (savedTheme && themes.find(t => t.name === savedTheme)) {
       setTheme(savedTheme);
@@ -48,21 +46,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    // Save theme to localStorage and apply CSS classes
     localStorage.setItem('theme', theme);
-    
-    // Remove all theme classes
-    document.documentElement.classList.remove('theme-dark', 'theme-light', 'theme-cyberpunk', 'theme-ocean');
-    
-    // Add current theme class
+    document.documentElement.classList.remove('theme-amethyst', 'theme-sapphire', 'theme-emerald', 'theme-rose');
     document.documentElement.classList.add(`theme-${theme}`);
   }, [theme]);
 
-  const value = {
-    theme,
-    setTheme,
-    themes,
-  };
+  const value = { theme, setTheme, themes };
 
   return (
     <ThemeContext.Provider value={value}>
