@@ -1,5 +1,25 @@
 @import "tailwindcss";
 
+/* Register the theme colours with Tailwind. Without this, classes such as bg-primary/30 or
+   hover:border-accent produce no CSS at all, because Tailwind only builds opacity and hover
+   variants for colours it knows about. */
+@theme inline {
+  --background-color-primary: var(--bg-primary);
+  --background-color-secondary: var(--bg-secondary);
+  --background-color-tertiary: var(--bg-tertiary);
+  --text-color-primary: var(--text-primary);
+  --text-color-secondary: var(--text-secondary);
+  --text-color-muted: var(--text-muted);
+  --border-color-theme: var(--border-color);
+  --color-accent: var(--accent-hex);
+}
+
+/* Typed as colours so a theme switch fades everywhere the accent is used. */
+@property --accent-hex { syntax: "<color>"; inherits: true; initial-value: #a855f7; }
+@property --accent-from { syntax: "<color>"; inherits: true; initial-value: #a855f7; }
+@property --accent-to { syntax: "<color>"; inherits: true; initial-value: #ec4899; }
+@property --accent-glow { syntax: "<color>"; inherits: true; initial-value: rgba(168, 85, 247, 0.5); }
+
 body {
   background: var(--bg-primary);
   color: var(--text-primary);
@@ -9,6 +29,7 @@ body {
 
 :root {
   --transition-colors: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: --accent-hex 0.5s, --accent-from 0.5s, --accent-to 0.5s, --accent-glow 0.5s;
   
   /* Deep Spatial Dark Theme (Structural) */
   --bg-primary: #050505;
@@ -54,20 +75,6 @@ body {
   --accent-from: #f43f5e;
   --accent-to: #fb923c; /* orange-400 */
 }
-
-/* Custom utility classes using CSS variables */
-.bg-primary { background-color: var(--bg-primary); }
-.bg-secondary { background-color: var(--bg-secondary); }
-.bg-tertiary { background-color: var(--bg-tertiary); }
-.text-primary { color: var(--text-primary); }
-.text-secondary { color: var(--text-secondary); }
-.text-muted { color: var(--text-muted); }
-.border-theme { border-color: var(--border-color); }
-
-/* Accent Specific Classes */
-.text-accent { color: var(--accent-hex); transition: var(--transition-colors); }
-.bg-accent { background-color: var(--accent-hex); transition: var(--transition-colors); }
-.border-accent { border-color: var(--accent-hex); transition: var(--transition-colors); }
 
 .gradient-text {
   background: linear-gradient(135deg, var(--accent-from), var(--accent-to));
