@@ -3,9 +3,7 @@
 import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import { cloudTexture, glowTexture, journey, mulberry32, SECTION_IDS, STATION_SPACING } from "./journey";
-
-const JOURNEY_LENGTH = (SECTION_IDS.length - 1) * STATION_SPACING;
+import { cloudTexture, GALAXY, glowTexture, journey, mulberry32 } from "./journey";
 
 const STAR_VERT = /* glsl */ `
   attribute float aSize;
@@ -45,7 +43,7 @@ const STAR_FRAG = /* glsl */ `
   }
 `;
 
-function buildStars(count: number, seed: number, place: (rng: () => number, out: number[]) => void) {
+export function buildStars(count: number, seed: number, place: (rng: () => number, out: number[]) => void) {
   const rng = mulberry32(seed);
   const positions = new Float32Array(count * 3);
   const sizes = new Float32Array(count);
@@ -67,7 +65,7 @@ function buildStars(count: number, seed: number, place: (rng: () => number, out:
   return geometry;
 }
 
-function StarPoints({ geometry, scale, farStart, farEnd, followCamera = false }: {
+export function StarPoints({ geometry, scale, farStart, farEnd, followCamera = false }: {
   geometry: THREE.BufferGeometry;
   scale: number;
   farStart: number;
@@ -110,22 +108,6 @@ function StarPoints({ geometry, scale, farStart, farEnd, followCamera = false }:
       />
     </points>
   );
-}
-
-/** Stars the camera actually flies through: a long tunnel wrapped around the whole route. */
-function StarTunnel({ count }: { count: number }) {
-  const geometry = useMemo(
-    () =>
-      buildStars(count, 11, (rng, out) => {
-        const angle = rng() * Math.PI * 2;
-        const radius = 4 + Math.pow(rng(), 0.8) * 70;
-        out[0] = Math.cos(angle) * radius;
-        out[1] = Math.sin(angle) * radius;
-        out[2] = 40 - rng() * (JOURNEY_LENGTH + 130);
-      }),
-    [count]
-  );
-  return <StarPoints geometry={geometry} scale={70} farStart={170} farEnd={105} />;
 }
 
 /** Distant stars on a shell that moves with the camera, so the sky is never empty. */
@@ -194,10 +176,12 @@ const GALAXY_VERT = /* glsl */ `
   uniform float uPixelRatio;
   varying float vAlpha;
   varying float vMix;
+  varying float vKind;
   void main() {
+    vKind = fract(aPhase * 7.31);
     vec4 mv = modelViewMatrix * vec4(position, 1.0);
     float dist = -mv.z;
-    gl_PointSize = clamp(aSize * uPixelRatio * 34.0 / dist, 1.0 * uPixelRatio, 7.0 * uPixelRatio);
+    gl_PointSize = clamp(aSize * uPixelRatio * 30.0 / dist, 1.0 * uPixelRatio, 7.0 * uPixelRatio);
     vAlpha = (0.8 + 0.2 * sin(uTime * 1.1 + aPhase)) * smoothstep(0.3, 2.5, dist);
     vMix = aMix;
     gl_Position = projectionMatrix * mv;
@@ -210,18 +194,22 @@ const GALAXY_FRAG = /* glsl */ `
   uniform float uOpacity;
   varying float vAlpha;
   varying float vMix;
+  varying float vKind;
   void main() {
     float d = length(gl_PointCoord - 0.5);
     float disc = smoothstep(0.5, 0.05, d);
-    vec3 core = mix(uColorB, vec3(1.0), 0.7);
-    vec3 arm = mix(mix(uColorB, uColorA, smoothstep(0.15, 0.8, vMix)), vec3(1.0), 0.22);
-    vec3 col = mix(core, arm, smoothstep(0.0, 0.45, vMix));
+    // Natural colours: an old, warm core; young blue-white arms with the odd pink star-forming region.
+    // The theme only lends the arms a faint tint.
+    vec3 core = vec3(1.0, 0.84, 0.62);
+    vec3 arm = mix(vec3(0.68, 0.78, 1.0), uColorA, 0.12);
+    arm = mix(arm, vec3(1.0, 0.55, 0.72), step(0.95, vKind) * smoothstep(0.25, 0.6, vMix));
+    vec3 col = mix(core, arm, smoothstep(0.05, 0.5, vMix));
     gl_FragColor = vec4(col, disc * vAlpha * uOpacity);
     #include <colorspace_fragment>
   }
 `;
 
-/** Spiral galaxy that fills the hero. Scrolling on flies the camera straight through its disc. */
+/** The Milky Way. The camera starts inside it, at the Sun, and ends far enough out to see all of it. */
 function Galaxy({ count }: { count: number }) {
   const group = useRef<THREE.Group>(null);
   const spin = useRef<THREE.Group>(null);
@@ -282,19 +270,16 @@ function Galaxy({ count }: { count: number }) {
 
   useFrame((state) => {
     if (!group.current) return;
-    // Nothing to draw once the camera is well past it.
-    group.current.visible = journey.progress < 1.6;
-    if (!group.current.visible) return;
     if (material.current) {
       material.current.uniforms.uTime.value = journey.time;
       material.current.uniforms.uPixelRatio.value = state.gl.getPixelRatio();
     }
-    if (spin.current) spin.current.rotation.y = journey.time * 0.018;
+    if (spin.current) spin.current.rotation.y = journey.time * GALAXY.spinRate;
     coreMaterial.current?.color.copy(journey.colorB).lerp(WHITE, 0.6);
   });
 
   return (
-    <group ref={group} position={[0, 0.3, -17]} rotation={[0.46, 0, 0.14]}>
+    <group ref={group} position={GALAXY.position} rotation={GALAXY.rotation}>
       <group ref={spin}>
         <points geometry={geometry} frustumCulled={false}>
           <shaderMaterial
@@ -328,9 +313,8 @@ export default function Environment({ lowPower }: { lowPower: boolean }) {
   return (
     <>
       <Sky count={lowPower ? 1200 : 2400} />
-      <StarTunnel count={lowPower ? 2400 : 5200} />
       <Nebulae />
-      <Galaxy count={lowPower ? 6000 : 13000} />
+      <Galaxy count={lowPower ? 12000 : 28000} />
     </>
   );
 }

@@ -59,7 +59,7 @@ export default function CustomCursor() {
     <>
       {/* Main Dot */}
       <motion.div
-        className={`fixed top-0 left-0 w-3 h-3 bg-purple-500 rounded-full pointer-events-none z-9999 mix-blend-difference transition-opacity duration-300 ${isVisible ? 'opacity-100' : 'opacity-0'}`}
+        className={`fixed top-0 left-0 w-3 h-3 bg-accent rounded-full pointer-events-none z-9999 mix-blend-difference transition-opacity duration-300 ${isVisible ? 'opacity-100' : 'opacity-0'}`}
         style={{
           translateX: cursorX,
           translateY: cursorY,
@@ -70,23 +70,16 @@ export default function CustomCursor() {
       
       {/* Trailing Ring */}
       <motion.div
-        className={`fixed top-0 left-0 w-8 h-8 border border-purple-500 rounded-full pointer-events-none z-9998 mix-blend-difference transition-opacity duration-300 ${isVisible ? 'opacity-100' : 'opacity-0'}`}
+        className={`fixed top-0 left-0 w-8 h-8 border rounded-full pointer-events-none z-9998 mix-blend-difference transition-[opacity,background-color,border-color] duration-300 ${isVisible ? 'opacity-100' : 'opacity-0'} ${isHovering ? 'bg-accent/10 border-transparent' : 'border-accent'}`}
         style={{
           translateX: cursorXSpring,
           translateY: cursorYSpring,
           x: '-50%',
           y: '-50%',
         }}
-        animate={{
-          scale: isHovering ? 1.5 : 1,
-          backgroundColor: isHovering ? 'rgba(168, 85, 247, 0.1)' : 'rgba(168, 85, 247, 0)',
-          borderColor: isHovering ? 'rgba(168, 85, 247, 0)' : 'rgb(168, 85, 247)',
-        }}
-        transition={{
-            scale: { duration: 0.2 },
-            backgroundColor: { duration: 0.2 },
-            borderColor: { duration: 0.2 }
-        }}
+        // Colours come from the theme's accent (classes above); only the size animates here.
+        animate={{ scale: isHovering ? 1.5 : 1 }}
+        transition={{ scale: { duration: 0.2 } }}
       />
     </>
   );
