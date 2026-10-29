@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Literata } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { Analytics } from "@vercel/analytics/next";
@@ -14,9 +14,16 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+/** Serif for the few statement lines, for an editorial rather than app-like voice. */
+const literata = Literata({
+  variable: "--font-literata",
+  subsets: ["latin"],
+  weight: ["300", "400"],
+});
+
 export const metadata: Metadata = {
-  title: "Rahul Gogra",
-  description: "Portfolio Webapp Nextjs, typescript",
+  title: "Rahul Gogra | Software Development Engineer",
+  description: "Rahul Gogra, Software Development Engineer. Backend systems on Node.js, Kafka and AWS, and the React and Next.js interfaces on top of them.",
   icons: {
     icon: '/portfolio.png',
   },
@@ -37,7 +44,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${literata.variable} antialiased`}
         suppressHydrationWarning
       >
         <Analytics />

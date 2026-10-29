@@ -12,24 +12,21 @@
   --text-color-muted: var(--text-muted);
   --border-color-theme: var(--border-color);
   --color-accent: var(--accent-hex);
+  --font-sans: var(--font-geist-sans), Helvetica, Arial, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-serif: var(--font-literata), Georgia, serif;
 }
 
-/* Typed as colours so a theme switch fades everywhere the accent is used. */
-@property --accent-hex { syntax: "<color>"; inherits: true; initial-value: #a855f7; }
-@property --accent-from { syntax: "<color>"; inherits: true; initial-value: #a855f7; }
-@property --accent-to { syntax: "<color>"; inherits: true; initial-value: #ec4899; }
-@property --accent-glow { syntax: "<color>"; inherits: true; initial-value: rgba(168, 85, 247, 0.5); }
 
 body {
   background: var(--bg-primary);
   color: var(--text-primary);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Helvetica, Arial, sans-serif;
   overflow-x: hidden;
 }
 
 :root {
   --transition-colors: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  transition: --accent-hex 0.5s, --accent-from 0.5s, --accent-to 0.5s, --accent-glow 0.5s;
   
   /* Deep Spatial Dark Theme (Structural) */
   --bg-primary: #050505;

@@ -3,29 +3,33 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import CareerPath from "./CareerPath";
-import Constellation, { type SkillCategory } from "./Constellation";
+import CosmicZoom from "./CosmicZoom";
 import Environment from "./Environment";
-import Horizon from "./Horizon";
-import Planet from "./Planet";
-import ProjectScreens from "./ProjectScreens";
-import { journey, SECTION_IDS, STATION_SPACING } from "./journey";
+import { distanceKm, framing, JOURNEY_END_KM, journey, sunWorldPosition } from "./journey";
 
 interface SpaceJourneyProps {
   accentHex: string;
   accentToHex: string;
-  skillCategories: SkillCategory[];
-  projectImages: string[];
-  experienceCount: number;
 }
 
-type SceneProps = SpaceJourneyProps & { lowPower: boolean };
-
-function Scene({ accentHex, accentToHex, skillCategories, projectImages, experienceCount, lowPower }: SceneProps) {
-  /** Everything in this group is positioned in the camera's own space, so it can be lined up with the HTML. */
+function Scene({ accentHex, accentToHex, lowPower }: SpaceJourneyProps & { lowPower: boolean }) {
+  /** Everything in this group is positioned in the camera's own space. */
   const view = useRef<THREE.Group>(null);
   const targetA = useMemo(() => new THREE.Color(accentHex), [accentHex]);
   const targetB = useMemo(() => new THREE.Color(accentToHex), [accentToHex]);
+  const scratch = useMemo(
+    () => ({
+      sun: new THREE.Vector3(),
+      endPosition: new THREE.Vector3(),
+      endQuaternion: new THREE.Quaternion(),
+      euler: new THREE.Euler(),
+      lookMatrix: new THREE.Matrix4(),
+      lookQuaternion: new THREE.Quaternion(),
+      sway: new THREE.Quaternion(),
+      up: new THREE.Vector3(0, 1, 0),
+    }),
+    []
+  );
 
   // Runs before every other piece (negative priority) so they all see this frame's camera.
   useFrame((state, rawDelta) => {
@@ -38,26 +42,31 @@ function Scene({ accentHex, accentToHex, skillCategories, projectImages, experie
     journey.colorA.lerp(targetA, ease);
     journey.colorB.lerp(targetB, ease);
 
-    const previous = journey.progress;
-    journey.progress = calm ? journey.target : THREE.MathUtils.damp(previous, journey.target, 4.5, delta);
-    const speed = (journey.progress - previous) / Math.max(delta, 0.0001);
-    journey.velocity = THREE.MathUtils.damp(journey.velocity, speed, 6, delta);
+    // A gentle follow, so even a fast flick of the wheel turns into a smooth glide.
+    journey.progress = calm ? journey.target : THREE.MathUtils.damp(journey.progress, journey.target, 3, delta);
+    journey.km = distanceKm(journey.progress);
+    journey.flip = calm ? journey.flipTarget : THREE.MathUtils.damp(journey.flip, journey.flipTarget, 2.5, delta);
 
-    const p = journey.progress;
+    // One straight pull-back: the camera starts on top of the Sun's place in the galaxy and retreats
+    // towards a point from which the whole galaxy is in view. Its distance along that line follows the
+    // distance from Earth, so it only visibly moves near the end of the page.
+    const camera = state.camera as THREE.PerspectiveCamera;
+    const { sun, endPosition, endQuaternion, euler, lookMatrix, lookQuaternion, sway, up } = scratch;
     const px = calm ? 0 : journey.pointerX;
     const py = calm ? 0 : journey.pointerY;
-    const camera = state.camera as THREE.PerspectiveCamera;
-    // Forward travel carries the story; the gentle weave and roll keep it from feeling like a rail.
-    camera.position.set(Math.sin(p * 1.1) * 1.0 + px * 0.25, Math.sin(p * 0.8) * 0.5 + py * 0.15, -p * STATION_SPACING);
-    camera.rotation.set(py * 0.02 + Math.sin(p * 0.6) * 0.02, -px * 0.03 + Math.sin(p * 0.9) * 0.05, Math.sin(p * 0.7) * 0.035);
-
-    // Widen the lens slightly at speed.
-    const fov = 45 + (calm ? 0 : Math.min(Math.abs(journey.velocity) * 4.5, 8));
-    if (Math.abs(camera.fov - fov) > 0.01) {
-      camera.fov = fov;
-      camera.updateProjectionMatrix();
-    }
+    sunWorldPosition(sun, journey.time);
+    endPosition.set(px * 0.2, py * 0.12, 0);
+    endQuaternion.setFromEuler(euler.set(py * 0.015, -px * 0.02, 0));
+    camera.position.copy(sun).lerp(endPosition, journey.km / JOURNEY_END_KM);
+    lookQuaternion.setFromRotationMatrix(lookMatrix.lookAt(endPosition, sun, up));
+    lookQuaternion.multiply(sway.setFromEuler(euler.set(py * 0.02, -px * 0.03, 0)));
+    camera.quaternion.copy(lookQuaternion).slerp(endQuaternion, THREE.MathUtils.smoothstep(journey.progress, 0.85, 1));
     camera.updateMatrixWorld();
+
+    // Shift the picture so the subject sits beside the reading column rather than under it.
+    const { width, height } = state.size;
+    const [ox, oy] = framing(journey.progress, width / height < 0.9, journey.flip);
+    camera.setViewOffset(width, height, (-ox * width) / 2, (oy * height) / 2, width, height);
 
     if (view.current) {
       view.current.position.copy(camera.position);
@@ -72,19 +81,15 @@ function Scene({ accentHex, accentToHex, skillCategories, projectImages, experie
       <color attach="background" args={["#050505"]} />
       <Environment lowPower={lowPower} />
       <group ref={view}>
-        <Horizon />
-        <Planet />
-        <Constellation categories={skillCategories} />
-        <CareerPath count={experienceCount} />
-        <ProjectScreens images={projectImages} />
+        <CosmicZoom lowPower={lowPower} />
       </group>
     </>
   );
 }
 
 /**
- * The single 3D scene behind the whole page. Scrolling flies the camera forward through it, and each
- * section's centrepiece is drawn over an HTML element tagged with a data-space-anchor attribute.
+ * The 3D backdrop behind the whole page: one continuous zoom out from Earth to the whole Milky Way,
+ * driven by how far down the page the visitor has scrolled.
  */
 export default function SpaceJourney(props: SpaceJourneyProps) {
   const [lowPower] = useState(() => typeof window !== "undefined" && window.innerWidth < 768);
@@ -99,41 +104,20 @@ export default function SpaceJourney(props: SpaceJourneyProps) {
     return () => query.removeEventListener("change", sync);
   }, []);
 
-  // Translate the scroll position into "how far between which two sections are we".
   useEffect(() => {
-    let stops: number[] = [];
-
     const update = () => {
-      if (stops.length < 2) return;
-      const y = window.scrollY;
-      let i = 0;
-      while (i < stops.length - 2 && y >= stops[i + 1]) i++;
-      const span = stops[i + 1] - stops[i];
-      journey.target = THREE.MathUtils.clamp(i + (y - stops[i]) / span, 0, stops.length - 1);
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      journey.target = max > 0 ? THREE.MathUtils.clamp(window.scrollY / max, 0, 1) : 0;
     };
-
-    const measure = () => {
-      const maxScroll = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
-      stops = [];
-      SECTION_IDS.forEach((id) => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        const top = Math.min(el.getBoundingClientRect().top + window.scrollY, maxScroll);
-        // Short final sections can never reach the top of the screen, so keep the stops strictly increasing.
-        stops.push(stops.length ? Math.max(top, stops[stops.length - 1] + 1) : top);
-      });
-      update();
-    };
-
-    measure();
-    const observer = new ResizeObserver(measure);
+    update();
+    const observer = new ResizeObserver(update);
     observer.observe(document.body);
-    window.addEventListener("resize", measure);
     window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
     return () => {
       observer.disconnect();
-      window.removeEventListener("resize", measure);
       window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
     };
   }, []);
 
@@ -152,7 +136,7 @@ export default function SpaceJourney(props: SpaceJourneyProps) {
       <Canvas
         flat
         dpr={lowPower ? [1, 1.5] : [1, 1.75]}
-        camera={{ position: [0, 0, 0], fov: 45, near: 0.1, far: 400 }}
+        camera={{ position: [0, 0, 0], fov: 45, near: 0.001, far: 400 }}
         gl={{ alpha: false, antialias: true, powerPreference: "high-performance" }}
         style={{ pointerEvents: "none" }}
       >

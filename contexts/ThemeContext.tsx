@@ -36,17 +36,31 @@ export const themes = [
 ];
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('amethyst');
+  const [theme, setThemeState] = useState<Theme>('amethyst');
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme') as Theme;
-    if (savedTheme && themes.find(t => t.name === savedTheme)) {
-      setTheme(savedTheme);
+    try {
+      const savedTheme = localStorage.getItem('theme') as Theme;
+      if (savedTheme && themes.find(t => t.name === savedTheme)) {
+        setThemeState(savedTheme);
+      }
+    } catch {
+      /* Storage can be blocked; fall back to the default. */
     }
   }, []);
 
+  // Save only when the visitor picks a theme. Saving whenever the theme changes would store the default
+  // on first load, before the saved choice has been read back, and overwrite it.
+  const setTheme = (next: Theme) => {
+    setThemeState(next);
+    try {
+      localStorage.setItem('theme', next);
+    } catch {
+      /* Not saved; the choice still applies for this visit. */
+    }
+  };
+
   useEffect(() => {
-    localStorage.setItem('theme', theme);
     document.documentElement.classList.remove('theme-amethyst', 'theme-sapphire', 'theme-emerald', 'theme-rose');
     document.documentElement.classList.add(`theme-${theme}`);
   }, [theme]);

@@ -16,6 +16,8 @@ export default function ThemeSwitcher() {
           whileHover={{ scale: 1.15 }}
           whileTap={{ scale: 0.9 }}
           title={themeOption.label}
+          aria-label={`${themeOption.label} theme`}
+          aria-pressed={theme === themeOption.name}
         >
           {theme === themeOption.name && (
             <motion.div
